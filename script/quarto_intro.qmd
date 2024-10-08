@@ -1,0 +1,64 @@
+---
+title: "Intro to Quarto"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
+
+```{r}
+install.package("readr")
+install.packages("readr")
+library(readr)
+install.packages("here")
+library(here)
+bg_chem <- read_csv(here::here("data/BGchem2008data.csv"))
+```
+
+```{r}
+## Prints the column names of my data frame
+colnames(bg_chem)
+
+## General structure of the data frame - shows class of each column
+str(bg_chem)
+
+## First 6 lines of the data frame
+head(bg_chem)
+
+## Summary of each column of data
+summary(bg_chem)
+
+## Prints unique values in a column (in this case Date)
+unique(bg_chem$Date)
+```
+
+```{r}
+nitrate <- mean(bg_chem$NO3)
+nitrite <- mean(bg_chem$NO2)
+amm <- mean(bg_chem$NH4)
+phos <- mean(bg_chem$P)
+```
+
+```{r}
+ratio <- (nitrate + nitrite + amm)/phos
+plot(bg_chem$P, bg_chem$NO2 + bg_chem$NO3 + bg_chem$NH4)
+```
