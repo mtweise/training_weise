@@ -1,0 +1,152 @@
+---
+title: "Intro to Spatial Data in R"
+format: html
+---
+
+## Downloading data
+```{r}
+knb_url <- "https://dev.nceas.ucsb.edu/knb/d1/mn/v2/object/urn%3Auuid%3Aaceaecb2-1ce0-4d41-a839-d3607d32bb58"
+
+download.file(url = knb_url, destfile = '../shapefile_demo_data.zip')
+
+unzip('../shapefile_demo_data.zip', exdir = '../data')
+
+file.remove('../shapefile_demo_data.zip')
+```
+
+##Set up
+```{r}
+library(readr)
+library(sf)
+library(ggplot2)
+library(leaflet)
+library(scales)
+library(ggspatial)
+library(dplyr)
+library(here)
+```
+
+
+
+#Read region data
+```{r}
+ak_regions <- read_sf(here("data", "ak_regions_simp.shp"))
+
+plot(ak_regions)
+
+class(ak_regions)
+head(ak_regions)
+glimpse(ak_regions)
+st_crs(ak_regions)
+```
+
+##Transforming CRS
+
+```{r}
+ak_regions_3338 <- ak_regions %>% 
+  st_transform(crs=3338)
+
+plot(ak_regions_3338)
+
+st_crs(ak_regions_3338)
+```
+
+##'sf' and the 'tidyverse'
+```{r}
+ak_regions_3338 %>% 
+  select(region)
+```
+
+Filter for a specific region
+```{r}
+ak_regions_3338 %>% 
+  filter(region == "Southeast")
+```
+
+
+## Spatial Joins
+Read the population data
+```{r}
+pop <- read.csv(here("data", "alaska_population.csv"))
+```
+
+Convert pop data into a spatial object
+```{r}
+pop_4326 <- st_as_sf(pop,
+                     coords= c("lng", "lat"),
+                     crs = 4326,
+                     remove= FALSE)
+```
+
+Joining population data with region data
+```{r}
+pop_joined <- st_join(pop_4326,
+                      ak_regions_3338,
+                      join = st_within)
+```
+
+Transform pop data into alaska alberts
+```{r}
+pop_3338 <- st_transform(pop_4326,
+                         crs = 3338)
+st_crs(pop_3338)
+```
+
+Join data with same crs
+```{r}
+pop_joined <- st_join(pop_3338,
+                      ak_regions_3338,
+                      join= st_within)
+head(pop_joined)
+```
+
+Calculating total population by region
+
+```{r}
+pop_region <- pop_joined %>% 
+  as.data.frame() %>% 
+  group_by(region) %>% 
+  summarise(total_pop= sum(population))
+
+class(pop_region)
+head(pop_region)
+```
+
+
+Joining Regions with total population by region
+
+```{r}
+pop_region_3338 <- left_join(ak_regions_3338,
+                             pop_region,
+                             by = "region")
+plot(pop_region_3338["total_pop"])
+```
+
+Calculate total population by management area
+```{r}
+pop_mgmt_3338 <- pop_region_3338 %>% 
+  group_by(mgmt_area) %>% 
+  summarise(total_pop_mgmt = sum(total_pop),
+            do_union = FALSE)
+
+plot(pop_mgmt_3338["total_pop_mgmt"])
+```
+
+##Visualize with ggplot
+```{r}
+ggplot(pop_region_3338)+
+  geom_sf(aes(fill = total_pop))+
+  labs(fill= "Total Population")+
+  scale_fill_continuous(low= "khaki",
+                        high= "firebrick",
+                        labels= comma)+
+  theme_bw()
+```
+
+
+
+
+
+
+
+
