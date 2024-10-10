@@ -1,0 +1,121 @@
+---
+title: "R Practice: Functions"
+format: html
+---
+
+##create a function called double it
+
+#convert_f_to_c <- function(fahr) {
+  celsius <- (fahr - 32)*5/9
+  return(celsius)
+}
+
+
+```{r}
+double_it <- function(number) {
+  double <- (number *2)
+  return(double)
+}
+double_it(4)
+```
+##Write a function called exclaim_age() that returns the statement “I am ___ years old!”, where the blank is entered by the user as argument age.
+
+```{r}
+exclaim_age <- function(age) {
+  statement <- paste("I am", age, "years old!")
+  return(statement)
+}
+exclaim_age(80)
+```
+
+
+
+##Run the function with some values. Is it running how you expect? Run the function again, but this time use the function in an arithmetic expression. Is the output what you expect?
+```{r}
+# "find_max() function" #
+find_max <- function(value_1, value_2) {
+    
+    if (value_1 > value_2) {
+        return(value_1)
+    }
+    else if (value_2 > value_1) {
+        return(value_2)
+    }
+}
+
+find_max(15, 3)
+5* find_max(10, 4)
+```
+
+#Run find_max(4, 2, 5) in the Console.What happens? What kind of message appears? Is it sufficient? If not, consider adding a warning or error message using warning() or stop(). Remember, use ?function to access the Help page. Add additional logic to the function, as needed.
+
+```{r}
+find_max(4,4)
+#error message if two of the same values are given
+find_max <- function(value_1, value_2) {
+    ###error checking
+
+  if(value_1 == value_2) stop('Two different numbers are required')
+  
+    if (value_1 > value_2) {
+        return(value_1)
+    }
+    else if (value_2 > value_1) {
+        return(value_2)
+      
+    }
+}
+find_max(4, 4)
+```
+
+```{r}
+find_max(4, "cow")
+find_max <- function(value_1, value_2) {
+    
+    # `|` is the logical OR operator
+    # `!=` is the not-equal-to operator
+    if (is.numeric(value_1) != TRUE | is.numeric(value_2) != TRUE) {
+        # alt expression: is.numeric(value_1) == FALSE | is.numeric(value_2) == FALSE
+        stop("Value must be a numeric type.")
+    }
+    
+    if (value_1 == value_2) {
+        stop("Values must be different from each other.")
+    }
+    
+    if (value_1 > value_2) {
+        return(value_1)
+    }
+    else if (value_2 > value_1) {
+        return(value_2)
+    }
+}
+```
+
+#Run find_max(4, 4) in the Console. Previously we coded our function to report an error. But perhaps the user would prefer to have the function return the shared value, as an option. Add an argument with a reasonable default value to allow the user to control this behavior. Add additional logic to the function, as needed.
+
+```{r}
+find_max <- function(value_1, value_2) {
+    
+    # `|` is the logical OR operator
+    # `!=` is the not-equal-to operator
+    if (is.numeric(value_1) != TRUE | is.numeric(value_2) != TRUE) {
+        # alt expression: is.numeric(value_1) == FALSE | is.numeric(value_2) == FALSE
+        stop("Value must be a numeric type.")
+    }
+    
+    if (value_1 == value_2) {
+        return(value_1)
+    }
+    
+    if (value_1 > value_2) {
+        return(value_1)
+    }
+    else if (value_2 > value_1) {
+        return(value_2)
+    }
+}
+find_max(4,4)
+```
+
+
